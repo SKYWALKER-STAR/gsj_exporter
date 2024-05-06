@@ -1,0 +1,18 @@
+log:
+  level: WARN
+  max_age: 2
+instances:
+  - instance_id: opengauss_instance_1
+    exclude_dbs: template0,template1
+    host: 192.168.80.151
+    port: 5432
+    db: school
+    user: monitor
+    password: monitor^123
+  - instance_id: opengauss_instance_2
+    exclude_dbs: template0,template1
+    host: 192.168.80.152
+    port: 5432
+    db: school
+    user: monitor
+    password: MUZIHamNvQ0avYoK9pJJf+/v6GB9woSUExWAG1vT0jPdoWa+aTre4jGJecVx/0buRMJqh8cxbjNBA4BJ6KcWyi1qghWdKwaL0LVd95TczIqVKC4xY2Pj/Z3vUQ+uYe0gJfYG7paxhvvRgYmu4aybuBmzwhZNz9/ldTrHv2hWmgSPvmdtszt5jN8MlcUASeLwzDOUYKVH0hOwLlB82E6mAAtOZM5JCmbIticnQDF9Rs467bLvv/xVUYU3CDLfW9x3DIBpS1VdppSEooKTpNVBNwewlR7JdxeOMj017ecWw2TyJo5FkY7r8Th1bR0qE89WvzQYJrD1ahbvXOT81aP9YQ==
