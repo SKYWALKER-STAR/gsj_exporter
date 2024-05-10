@@ -15,6 +15,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"net/http"
 
@@ -31,11 +32,10 @@ import (
 
 var (
 	cfgHandler = config.Handler{}
+	logger = log.New(os.Stdout,"",log.Lshortfile | log.Ldate | log.Ltime)
 
-	//获取命令行输入的参数值
-	//webConfig = kingpinflag.AddFlags(kingpin.CommandLine, ":9334")
 	listenAddress          = kingpin.Flag("web.listen-address", "sever listen port.").Default("9334").Int16()
-	metricsPath            = kingpin.Flag("web.metrics-path", "Path under which to expose metrics.").Default("/gaussdb/metrics").Envar("PG_EXPORTER_WEB_TELEMETRY_PATH").String()
+	metricsPath            = kingpin.Flag("web.metrics-path", "Path under which to expose metrics.").Default("/metrics").Envar("PG_EXPORTER_WEB_TELEMETRY_PATH").String()
 	disableDefaultMetrics  = kingpin.Flag("disable-default-metrics", "Do not include default metrics.").Default("false").Envar("PG_EXPORTER_DISABLE_DEFAULT_METRICS").Bool()
 	disableSettingsMetrics = kingpin.Flag("disable-settings-metrics", "Do not include pg_settings metrics.").Default("false").Envar("PG_EXPORTER_DISABLE_SETTINGS_METRICS").Bool()
 	metricPrefix           = kingpin.Flag("metric-prefix", "A metric prefix can be used to have non-default (not \"gs\") prefixes for each of the metrics").Default("gs").Envar("PG_EXPORTER_METRIC_PREFIX").String()
@@ -57,6 +57,9 @@ const (
 )
 
 func main() {
+
+	var target_info myencrypt.Target_info
+
 	kingpin.Version(version.Print(exporterName))
 	promlogConfig := &promlog.Config{}
 	flag.AddFlags(kingpin.CommandLine, promlogConfig)
@@ -64,52 +67,32 @@ func main() {
 	kingpin.Parse()
 
 	if fi,err := os.Stat("HISTORY");err == nil || os.IsExist(err) {
-		fmt.Println("监测到HISTORY文件，执行新模式")
+		logger.Println("监测到HISTORY文件，执行新模式")
 
 		if fi.Size() < 1 {
-			fmt.Println("HISTORY文件是空的，部署有问题，无法继续")
+			logger.Println("HISTORY文件是空的，部署有问题，无法继续")
 			os.Exit(1)
 		}
 
-		target_info := myencrypt.CheckInstall(fmt.Sprintf(":%d",*listenAddress))
-
+		//从一体化运维平台接受参数并且生成配置文件
+		target_info = myencrypt.CheckInstall(fmt.Sprintf(":%d",*listenAddress))
 		config_file := cfgHandler.InitFromUrl(target_info.InstanceId,target_info.Excludedbs,target_info.Hosts,target_info.Port,target_info.DB,target_info.User,target_info.Password,"0",1)
-
 		cfgHandler.WriteConfigFile(config_file)
 		if err := cfgHandler.ReloadConfig(); err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 			utils.GetLogger().Warn("Error loading config", "err", err)
 		}
 
 
 	} else {
-		fmt.Println("未监测到部署文件，不做任何改动，当前行为与官方包一致")
+		logger.Println("未监测到部署文件，不做任何改动，当前行为与官方包一致")
 		if err := cfgHandler.ReloadConfig(); err != nil {
-			fmt.Println(err)
+			logger.Println(err)
 			utils.GetLogger().Warn("Error loading config", "err", err)
 		}
 	}
 
-	/*
-		dsn, err := getDataSourceById("opengauss_instance_1")
-		if err != nil {
-			fmt.Println(err)
-		}
-		//http.HandleFunc("/metrics", handleProbe(logger, excludedDatabases))
-
-		pe, err := collector.NewPostgresCollector(
-			dsn,
-			[]string{},
-		)
-		if err != nil {
-			utils.GetLogger().Warn("Failed to create PostgresCollector", "err", err.Error())
-		} else {
-			prometheus.MustRegister(pe)
-		}
-	*/
-	//http.Handle(*metricsPath, promhttp.Handler())
-
-	http.HandleFunc(*metricsPath, handleProbe())
+	http.HandleFunc(*metricsPath, handleProbe(target_info.InstanceId))
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, `<html>
 		<head><title>HuaWei GaussDB Exporter</title></head>
@@ -119,19 +102,11 @@ func main() {
 		</body>
 		</html>`)
 	})
+
 	utils.GetLogger().Info("服务已经启动", "server listen port", *listenAddress)
 	err := http.ListenAndServe(fmt.Sprintf(":%d", *listenAddress), nil)
 	if err != nil {
-		fmt.Println("ListenAndServe err:", err)
+		logger.Println("ListenAndServe err:", err)
 		utils.GetLogger().Error("msg:", "无法启动web容器服务", "error:", err)
 	}
-	/*
-		srv := &http.Server{}
-		if err := web.ListenAndServe(srv, webConfig, nil); err != nil {
-			utils.GetLogger().Error("Error running HTTP server", "err", err)
-			os.Exit(1)
-		} else {
-			utils.GetLogger().Info("服务已经启动")
-		}
-	*/
 }

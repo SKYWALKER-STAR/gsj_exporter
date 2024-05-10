@@ -94,9 +94,6 @@ func (ch *Handler) WriteConfigFile(tgi Config) int {
 		panic(err)
 		return -1
 	}
-
-	fmt.Println(tgi)
-
 	return 0
 }
 

@@ -23,15 +23,15 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
-func handleProbe() http.HandlerFunc {
+func handleProbe(instanceid string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		params := r.URL.Query()
 		instanceId := params.Get("instance_id")
 		if instanceId == "" {
-			http.Error(w, "instance_id is required", http.StatusBadRequest)
-			utils.GetLogger().Warn("instance_id is required")
-			return
+			//http.Error(w, "instance_id is required", http.StatusBadRequest)
+			//utils.GetLogger().Warn("instance_id is required")
+			instanceId = instanceid
 		}
 
 		dsn, err := getDataSourceById(instanceId)
