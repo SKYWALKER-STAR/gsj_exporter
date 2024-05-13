@@ -689,17 +689,22 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) {
 
 			utils.GetLogger().Error("err", err)
 
+			/*
 			if _, ok := err.(*ErrorConnectToServer); ok {
+				fmt.Println(ok)
 				connectionErrorsCount++
 			}
+			*/
 		}
 	}
 
 	switch {
 	case connectionErrorsCount >= len(dsns):
 		e.psqlUp.Set(0)
+		//e.psqlUp.Set(1)
 	default:
-		e.psqlUp.Set(1) // Didn't fail, can mark connection as up for this scrape.
+		e.psqlUp.Set(1)
+		//e.psqlUp.Set(0) // Didn't fail, can mark connection as up for this scrape.
 	}
 
 	switch errorsCount {

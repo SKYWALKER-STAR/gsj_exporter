@@ -92,34 +92,41 @@ func starthttp(wg *sync.WaitGroup, listenAddress string) {
 		logger.Printf("收到url参数: %v\n", string(vars.Encode()))
 		instance_id := vars.Get("instance_id")
 		if len(instance_id) == 0 {
-			logger.Printf("instance id is:%s",instance_id)
+			instance_id = "gaussdb_default"
+			logger.Printf("set instance_id to %s",instance_id)
 		}
 		excludedbs := vars.Get("excludedbs")
 		if excludedbs == "" {
-			logger.Printf("excludedbs is:%s",excludedbs)
+			logger.Printf("excludedbs is null")
 		}
-		hosts	:= vars.Get("hosts")
+		hosts	:= vars.Get("ip")
 		if hosts == "" {
-			logger.Printf("excludedbs is:%s",excludedbs)
+			hosts = "127.0.0.1"
+			logger.Printf("set host to default: %s",hosts)
 		}
 		port := vars.Get("port")
 		if port == "" {
-			logger.Printf("port is:%s",excludedbs)
+			port = "5432"
+			logger.Printf("set port to default: %s",port)
 		}
 		db := vars.Get("db")
 		if db == "" {
-			logger.Printf("database is :%s",excludedbs)
+			db = "postgres"
+			logger.Printf("set db to default: %s",db)
 		}
 		user, _ := DesDecrypt(vars.Get("user"), getdefaultkey(), "")
 		if user == ""{
-			logger.Printf("user is :%s",excludedbs)
+			user = "admin"
+			logger.Printf("set user to default: %s",user)
 		}
 		password, _ := DesDecrypt(vars.Get("password"), getdefaultkey(), "")
 		if password == "" {
-			logger.Printf("password is :%s",excludedbs)
+			password = "admin"
+			logger.Printf("set password to defult: %s",password)
 		}
 
-		if len(hosts) == 0 || len(port) == 0 || len(instance_id) == 0 || len(db) == 0 {
+		if len(hosts) == 0 || len(port) == 0  {
+			logger.Print("Code runs into here url 参数不足")
 			w.WriteHeader(500)
 			w.Write([]byte("url参数不足或解析失败，如果正在重新纳管请稍等，否则请联系支持人员"))
 			return
@@ -158,6 +165,7 @@ func starthttp(wg *sync.WaitGroup, listenAddress string) {
 		cancel()
 		// graceful-shutdown
 		shutdownerr := srv.Shutdown(context.Background())
+		logger.Println("Hello world from shutdownerr")
 		if shutdownerr != nil {
 			logger.Println("temporary http server shutdown error", err)
 		}
