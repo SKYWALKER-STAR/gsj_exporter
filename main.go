@@ -98,7 +98,6 @@ func main() {
 		<head><title>HuaWei GaussDB Exporter</title></head>
 		<body>
 		<h2>Welcome to use HuaWei GaussDB Exporter</h2>
-		<h2>This exporter was developed by Li Hongjie from Digitalgd Company</h2>
 		</body>
 		</html>`)
 	})
