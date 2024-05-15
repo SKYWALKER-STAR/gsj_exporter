@@ -689,12 +689,10 @@ func (e *Exporter) scrape(ch chan<- prometheus.Metric) {
 
 			utils.GetLogger().Error("err", err)
 
-			/*
 			if _, ok := err.(*ErrorConnectToServer); ok {
 				fmt.Println(ok)
 				connectionErrorsCount++
 			}
-			*/
 		}
 	}
 

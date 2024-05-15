@@ -48,7 +48,7 @@ func handleProbe(instanceid string) http.HandlerFunc {
 			DisableDefaultMetrics(*disableDefaultMetrics),
 			DisableSettingsMetrics(*disableSettingsMetrics),
 		}
-		//将opts传进来，其实就是初始化了exporter
+
 		exporter := NewExporter([]string{dsn}, opts...)
 		defer func() {
 			exporter.servers.Close()

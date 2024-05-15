@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	configName = "config.yml"
+	configName = ".config.yml"
 )
 
 type Config struct {

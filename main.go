@@ -20,7 +20,6 @@ import (
 	"net/http"
 
 	"github.com/alecthomas/kingpin/v2"
-	//"github.com/prometheus-community/gaussdb_exporter/config"
 	"github.com/prometheus-community/gaussdb_exporter/utils"
 	"github.com/prometheus/common/promlog"
 	"github.com/prometheus/common/promlog/flag"
@@ -34,7 +33,7 @@ var (
 	cfgHandler = config.Handler{}
 	logger = log.New(os.Stdout,"",log.Lshortfile | log.Ldate | log.Ltime)
 
-	listenAddress          = kingpin.Flag("web.listen-address", "sever listen port.").Default("9334").Int16()
+	listenAddress          = kingpin.Flag("web.listen-address", "sever listen port.").Default(":9334").Int16()
 	metricsPath            = kingpin.Flag("web.metrics-path", "Path under which to expose metrics.").Default("/metrics").Envar("PG_EXPORTER_WEB_TELEMETRY_PATH").String()
 	disableDefaultMetrics  = kingpin.Flag("disable-default-metrics", "Do not include default metrics.").Default("false").Envar("PG_EXPORTER_DISABLE_DEFAULT_METRICS").Bool()
 	disableSettingsMetrics = kingpin.Flag("disable-settings-metrics", "Do not include pg_settings metrics.").Default("false").Envar("PG_EXPORTER_DISABLE_SETTINGS_METRICS").Bool()
@@ -66,6 +65,7 @@ func main() {
 	kingpin.HelpFlag.Short('h')
 	kingpin.Parse()
 
+	/* 一体化监控平台纳管逻辑 */
 	if fi,err := os.Stat("HISTORY");err == nil || os.IsExist(err) {
 		logger.Println("监测到HISTORY文件，执行新模式")
 
@@ -74,7 +74,7 @@ func main() {
 			os.Exit(1)
 		}
 
-		//从一体化运维平台接受参数并且生成配置文件
+		/* 从一体化监控平台接收参数并且生成配置文件 */
 		target_info = myencrypt.CheckInstall(fmt.Sprintf(":%d",*listenAddress))
 		config_file := cfgHandler.InitFromUrl(target_info.InstanceId,target_info.Excludedbs,target_info.Hosts,target_info.Port,target_info.DB,target_info.User,target_info.Password,"0",1)
 		cfgHandler.WriteConfigFile(config_file)
@@ -92,7 +92,9 @@ func main() {
 		}
 	}
 
+	/* 注册/metrics接口，handleProbe作为处理函数 */
 	http.HandleFunc(*metricsPath, handleProbe(target_info.InstanceId))
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, `<html>
 		<head><title>HuaWei GaussDB Exporter</title></head>
