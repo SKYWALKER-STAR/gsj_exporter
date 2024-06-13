@@ -14,7 +14,6 @@
 package collector
 
 import (
-	"fmt"
 	"context"
 	"database/sql"
 
@@ -46,7 +45,18 @@ var (
 		[]string{"datname","pid","sessionid","usename","application_name","client_addr","client_port","query_id","query","query_start"}, nil,
 	)
 
-	pgSlowSQLQuery			= "SELECT datname,pid,sessionid,usename,application_name,client_addr,client_port,query_id,query,query_start FROM pg_stat_activity WHERE state != 'idle' AND now()-query_start > interval '5s' ORDER BY query_start;"
+	pgSlowSQLTotal = prometheus.NewDesc(
+		prometheus.BuildFQName(
+			namespace,
+			QuerySubsystem,
+			"slow_sql_total",
+		),
+		"Total number of slow sql",
+		[]string{}, nil,
+	)
+
+	pgSlowSQLQuery			= "SELECT count(*) FROM pg_stat_activity WHERE state != 'idle' AND now() - query_start > interval '5s'"
+	//pgSlowSQLQuery			= "SELECT datname,pid,sessionid,usename,application_name,client_addr,client_port,query_id,query,query_start,(SELECT count(*) FROM pg_stat_activity WHERE state != 'idle' AND now() - query_start > interval '5s') FROM pg_stat_activity WHERE state != 'idle' AND now()-query_start > interval '5s' ORDER BY query_start;"
 )
 
 // Update implements Collector and exposes database size.
@@ -74,7 +84,10 @@ func (c PGQueryCollector) Update(ctx context.Context, instance *instance, ch cha
 	defer rows.Close()
 
 	for rows.Next() {
+
+		/*
 		var datname,pid,sessionid,usename,application_name,client_addr,client_port,query_id,query,query_start sql.NullString
+		var count sql.NullFloat64
 		err := rows.Scan(
 			&datname,
 			&pid,
@@ -85,23 +98,28 @@ func (c PGQueryCollector) Update(ctx context.Context, instance *instance, ch cha
 			&client_port,
 			&query_id,
 			&query,
-			&query_start)
+			&query_start,
+			&count)
+		*/
+
+		var count sql.NullFloat64
+		err := rows.Scan(
+			&count)
 
 		if err != nil {
 			return err
 		}
 
-		labels := []string{datname.String,pid.String,sessionid.String,usename.String,application_name.String,client_addr.String,client_port.String,query_id.String,query.String,query_start.String}
+		//labels := []string{datname.String,pid.String,sessionid.String,usename.String,application_name.String,client_addr.String,client_port.String,query_id.String,query.String,query_start.String}
 
-		fmt.Println(labels)
 		ch <- prometheus.MustNewConstMetric(
-			pgSlowSQL,
-			prometheus.GaugeValue, 
-			1,
-			labels...,
+			pgSlowSQLTotal,
+			prometheus.CounterValue,
+			//count.Float64,
+			count.Float64,
+			//labels...,
 		)
 
 	}
 	return nil
-
 }

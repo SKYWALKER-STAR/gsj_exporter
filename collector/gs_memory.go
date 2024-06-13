@@ -40,9 +40,9 @@ var (
 		prometheus.BuildFQName(
 			namespace,
 			MemorySubsystem,
-			"gs_memory_info",
+			"info",
 		),
-		"Max process memory",
+		"gaussdb memory info",
 		[]string{"nodename","memtype"}, nil,
 	)
 
