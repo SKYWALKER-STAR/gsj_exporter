@@ -14,6 +14,7 @@
 package collector
 
 import (
+	"log"
 	"context"
 
 	"github.com/prometheus/client_golang/prometheus"
@@ -34,7 +35,7 @@ func NewPGLongRunningTransactionsCollector() (Collector, error) {
 
 var (
 	longRunningTransactionsCount = prometheus.NewDesc(
-		"pg_long_running_transactions",
+		prometheus.BuildFQName(namespace,longRunningTransactionsSubsystem,"total_numbers"),
 		"Current number of long running transactions",
 		[]string{},
 		prometheus.Labels{},
@@ -78,6 +79,9 @@ func (PGLongRunningTransactionsCollector) Update(ctx context.Context, instance *
 			prometheus.GaugeValue,
 			transactions,
 		)
+
+		log.Println("Log From long running transactions",transactions)
+
 		ch <- prometheus.MustNewConstMetric(
 			longRunningTransactionsAgeInSeconds,
 			prometheus.GaugeValue,
