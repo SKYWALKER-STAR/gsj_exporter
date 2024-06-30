@@ -1,0 +1,34 @@
+ts=2024-06-28T06:07:10.081Z caller=main.go:87 level=info msg=*web.FlagConfig
+ts=2024-06-28T06:07:10.081Z caller=main.go:90 level=info msg="Excluded databases" databases=[]
+ts=2024-06-28T06:07:10.081Z caller=main.go:116 level=warn 监测到HISTORY文件，执行新模式=(MISSING)
+收到url参数: 
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313
+set db to default: postgresset user to default: adminset password to defult: adminurl参数不足或解析失败
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313&ip=172.18.82.22&password=ba1ab3179542c0779a7649e08e52a80d&port=8000&user=39b65236b8be74e4
+set db to default: postgres&{{0 0} [0xc0002305a0] map[0xa2c220:64] 0xc000202a40 0xc000202ac0 {[0 0 0 0 0 0 0 0 0 255 128] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]} 0xc000167640}
+shutdown over
+url参数处理完毕
+unexpected EOF
+ts=2024-06-28T06:10:24.685Z caller=main.go:87 level=info msg=*web.FlagConfig
+ts=2024-06-28T06:10:24.685Z caller=main.go:90 level=info msg="Excluded databases" databases=[]
+ts=2024-06-28T06:10:24.685Z caller=main.go:116 level=warn 监测到HISTORY文件，执行新模式=(MISSING)
+unexpected EOF
+ts=2024-06-28T06:10:43.732Z caller=main.go:87 level=info msg=*web.FlagConfig
+ts=2024-06-28T06:10:43.732Z caller=main.go:90 level=info msg="Excluded databases" databases=[]
+ts=2024-06-28T06:10:43.732Z caller=main.go:116 level=warn 监测到HISTORY文件，执行新模式=(MISSING)
+收到url参数: dbname=17dd9ce1cfb8a0416234cb768a0f5313&ip=172.18.82.22&password=ba1ab3179542c0779a7649e08e52a80d&port=8000&user=39b65236b8be74e4
+set db to default: postgres&{{0 0} [0xc00018f7a0] map[0xa2c220:64] 0xc00018c400 0xc00018c480 {[0 0 0 0 0 0 0 0 0 255 128] [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0]} 0xc000036d70}
+shutdown over
+url参数处理完毕
+unexpected EOF
