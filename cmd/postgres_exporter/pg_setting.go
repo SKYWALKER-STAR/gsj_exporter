@@ -32,13 +32,13 @@ var (
 
 // Query the pg_settings view containing runtime variables
 func querySettings(ch chan<- prometheus.Metric, server *Server) error {
-	level.Debug(logger).Log("msg", "Querying pg_setting view", "server", server)
+	level.Info(logger).Log("Querying pg_setting view", "server", server)
 
 	// pg_settings docs: https://www.postgresql.org/docs/current/static/view-pg-settings.html
 	//
 	// NOTE: If you add more vartypes here, you must update the supported
 	// types in normaliseUnit() below
-	query := "SELECT name, setting, COALESCE(unit, ''), short_desc, vartype FROM pg_settings WHERE vartype IN ('bool', 'integer', 'real') AND name != 'sync_commit_cancel_wait';"
+	query := "SELECT name, setting, COALESCE(unit, '/'), short_desc, vartype FROM pg_settings WHERE vartype IN ('bool', 'integer', 'real') AND name != 'sync_commit_cancel_wait';"
 
 	rows, err := server.db.Query(query)
 	if err != nil {
@@ -79,6 +79,8 @@ func (s *pgSetting) metric(labels prometheus.Labels) prometheus.Metric {
 	case "bool":
 		if s.setting == "on" {
 			val = 1
+		} else {
+			val = 0
 		}
 	case "integer", "real":
 		if val, unit, err = s.normaliseUnit(); err != nil {
@@ -115,6 +117,7 @@ func (s *pgSetting) sanitizeValue() {
 
 // TODO: fix linter override
 // nolint: nakedret
+//貌似只接受存储单位与时间计量单位，其他的都抛出异常了。""值直接返回
 func (s *pgSetting) normaliseUnit() (val float64, unit string, err error) {
 	s.sanitizeValue()
 
@@ -126,6 +129,9 @@ func (s *pgSetting) normaliseUnit() (val float64, unit string, err error) {
 	// Units defined in: https://www.postgresql.org/docs/current/static/config-setting.html
 	switch s.unit {
 	case "":
+		return
+	case "/":
+		s.unit = ""
 		return
 	case "ms", "s", "min", "h", "d":
 		unit = "seconds"
